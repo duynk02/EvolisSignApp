@@ -9,10 +9,10 @@ tế kiểm tra chữ ký trên màn hình, xác nhận xong thì API trả ản
 ```
 ┌─────────────────────────── 1 máy tại quầy ───────────────────────────┐
 │                                                                       │
-│   HIS (app của Duy)                  SignBridgeApp (app này)         │
+│   HIS                  SignBridgeApp          │
 │   ───────────────────                ─────────────────────────       │
 │   gọi HTTP                            │
-│   POST localhost:8088/api/sign  ───►  HttpListener nhận request      │
+│   POST localhost:4033/api/sign  ───►  HttpListener nhận request      │
 │                                        │                              │
 │                                        ▼                              │
 │                                  Invoke() sang UI thread              │
