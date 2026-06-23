@@ -8,28 +8,28 @@ tế kiểm tra chữ ký trên màn hình, xác nhận xong thì API trả ản
 
 ```
 ┌─────────────────────────── 1 máy tại quầy ───────────────────────────┐
-│                                                                       │
-│   HIS                  SignBridgeApp          │
+│                                                                      │
+│   HIS                                    SignBridgeApp               │
 │   ───────────────────                ─────────────────────────       │
-│   gọi HTTP                            │
+│   gọi HTTP                             │                             |
 │   POST localhost:4033/api/sign  ───►  HttpListener nhận request      │
-│                                        │                              │
-│                                        ▼                              │
-│                                  Invoke() sang UI thread              │
-│                                        │                              │
-│                                        ▼                              │
-│                                  Mở FormSign (TopMost)                │
-│                                  "Vui lòng ký vào pad..."             │
-│                                        │                              │
-│                              [Bệnh nhân ký trên thiết bị signotec]    │
-│                                        │                              │
-│                                        ▼                              │
-│                                  Hiện ảnh preview trên màn hình       │
-│                                  Nhân viên y tế KIỂM TRA chữ ký:      │
-│                                    ✓ Xác nhận hợp lệ                 │
-│                                    ↺ Ký lại (nếu mờ/sai)             │
-│                                    ✕ Hủy                             │
-│                                        │                              │
+│                                        │                             │
+│                                        ▼                             │
+│                                  Invoke() sang UI thread             │
+│                                        │                             │
+│                                        ▼                             │
+│                                  Mở FormSign (TopMost)               │
+│                                  "Vui lòng ký vào pad..."            │
+│                                        │                             │
+│                              [Bệnh nhân ký trên thiết bị signotec]   │
+│                                        │                             │
+│                                        ▼                             │
+│                                  Hiện ảnh preview trên màn hình      │
+│                                  Nhân viên y tế KIỂM TRA chữ ký:     │
+│                                    ✓Xác nhận hợp lệ                 │
+│                                    ↺ Ký lại (nếu mờ/sai)            │
+│                                    ✕ Hủy                            │
+│                                        │                             │
 │   nhận ảnh trong response       ◄───  Trả JSON (base64 + file path)  │
 │   (request đã CHỜ tới đây)            │                              │
 │                                                                       │
