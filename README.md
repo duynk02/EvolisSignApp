@@ -59,7 +59,7 @@ SignBridgeApp/
 
 | Key | Mặc định | Ý nghĩa |
 |---|---|---|
-| `ListenPort` | `8088` | Cổng HTTP mà HIS sẽ gọi tới |
+| `ListenPort` | `4033` | Cổng HTTP mà HIS sẽ gọi tới |
 | `BindAddress` | `localhost` | Để `localhost` nếu HIS chạy CÙNG máy (mặc định, không cần quyền Admin). Đổi thành `+` nếu sau này cần cho máy khác trong LAN gọi tới (xem mục Bảo mật) |
 | `OutputFolder` | `C:\SignBridge\SignedImages` | Nơi lưu ảnh chữ ký |
 | `DeviceIndex` | `0` | Index thiết bị signotec (0 = thiết bị duy nhất/đầu tiên) |
@@ -88,7 +88,7 @@ Mở phiên ký, **chặn cho tới khi nhân viên xác nhận hoặc hủy**, 
 **Request body (tùy chọn):**
 ```json
 {
-  "fileName": "BN000123_PhieuTiepNhan"
+  "fileName": "BN000123_Phieu01KCB"
 }
 ```
 Nếu không gửi `fileName`, file sẽ được đặt tên `signature_<timestamp>.png`.
@@ -98,7 +98,6 @@ Nếu không gửi `fileName`, file sẽ được đặt tên `signature_<timest
 {
   "success": true,
   "imageBase64": "iVBORw0KGgoAAAANSU...",
-  "imagePath": "D:\\SignBridge\\SignedImages\\BN000123_PhieuTiepNhan_20260623_143501.png",
   "signedAtUtc": "2026-06-23T07:35:01.0000000Z",
   "errorMessage": null
 }
@@ -142,7 +141,7 @@ public async Task<string> YeuCauKySo(string maBenhNhan)
             $"{{\"fileName\":\"{maBenhNhan}_PhieuTiepNhan\"}}",
             Encoding.UTF8, "application/json");
 
-        var response = await client.PostAsync("http://localhost:8088/api/sign", requestBody);
+        var response = await client.PostAsync("http://localhost:4033/api/sign", requestBody);
         string json = await response.Content.ReadAsStringAsync();
 
         // Parse json (success, imageBase64, imagePath...) bằng
@@ -164,23 +163,8 @@ ngay lập tức như API thông thường.
   hiện tại nhưng để tham khảo): đổi `BindAddress` thành `+`, sau đó chạy
   lệnh sau **với quyền Admin, 1 lần duy nhất** trên máy đó:
   ```
-  netsh http add urlacl url=http://+:8088/ user=Everyone
+  netsh http add urlacl url=http://+:4033/ user=Everyone
   ```
-  và mở port 8088 trên Windows Firewall. Nên đặt thêm `ApiKey` trong
+  và mở port 4033 trên Windows Firewall. Nên đặt thêm `ApiKey` trong
   `App.config` khi mở ra LAN để tránh máy lạ gọi vào.
 
-## Cần kiểm tra lại khi build thật (chưa xác nhận 100% qua tài liệu SDK)
-
-Object Browser không hiện XML doc/summary cho các hàm, nên các điểm sau dùng
-giá trị "mặc định hợp lý" theo pattern SDK signotec phổ biến - nếu build lỗi
-hoặc ảnh xuất ra sai, đây là chỗ cần xem lại đầu tiên (trong `SignDeviceController.cs`):
-
-| Chỗ trong code | Giả định | Cần xác nhận |
-|---|---|---|
-| `DeviceOpen(_deviceIndex)` | `0` = thiết bị đầu tiên/duy nhất | Nếu lỗi, thử `DeviceGetCount()` để biết số thiết bị, hoặc `DeviceGetComPort(int)` |
-| `SignatureSaveAsFileEx(path, 0, 0, 0, ImageFormat.Png, 100, Color.White, SignatureImageFlag.None)` | width/height/dpi=0 (auto), quality=100 | Mở Object Browser, double-click vào `SignatureSaveAsFileEx` trong class `STPadLib` để xem chính xác tên/thứ tự tham số nếu overload không khớp |
-| `SignatureImageFlag.None` | Enum có giá trị `None` | Mở Object Browser, tìm `SignatureImageFlag` trong danh sách bên trái để xem các giá trị enum thật có sẵn |
-| Giá trị trả về `0` từ `DeviceOpen` = thành công | Theo pattern phổ biến | Nếu SDK dùng exception (`STPadException`) thay vì return code khi lỗi, cần bọc thêm `try/catch (STPadException)` |
-
-Nếu build báo lỗi `CS1501` (sai overload) hoặc `CS0117` (thiếu định nghĩa),
-gửi nguyên văn lỗi để sửa tiếp.
